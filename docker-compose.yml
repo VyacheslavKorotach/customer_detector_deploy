@@ -1,0 +1,23 @@
+version: "2"
+services:
+  nginx:
+    image: nginx:1.13
+    ports:
+      - 80:80
+    volumes:
+      - ./src/events:/usr/share/nginx/html
+  heart_monitor:
+    image: python:latest
+    build: .
+    container_name: hm01
+    command: bash -c "python detectors_heart_monitor.py"
+    volumes:
+      - ./src:/src
+  event_saver:
+    image: python:latest
+    build: .
+    container_name: es01
+    command: bash -c "python detectors_event_saver.py"
+    volumes:
+      - ./src:/src
+
