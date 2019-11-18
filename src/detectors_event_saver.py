@@ -41,7 +41,7 @@ def on_message(mosq, obj, msg):
             events_file.write(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
                               ', ' + str(d['event']) +
                               ', ' + str(d['duration']) + '\n')
-            print(str(time.strftime("%d.%m.%Y %H:%M:%S")) +
+            print(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
                   ', ' + str(d['event']) +
                   ', ' + str(d['duration']) + '\n')
             events_file.close()
