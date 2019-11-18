@@ -38,7 +38,7 @@ def on_message(mosq, obj, msg):
         events_filename = events_path + str(time.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
         if 'event' in d.keys():
             events_file = open(events_filename, 'a')
-            events_file.write(str(time.strftime("%d.%m.%Y %H:%M:%S")) +
+            events_file.write(str(time.strftime("%d.%m.%Y %H:%M:%S%z+0200")) +
                               ', ' + str(d['event']) +
                               ', ' + str(d['duration']) + '\n')
             print(str(time.strftime("%d.%m.%Y %H:%M:%S")) +
