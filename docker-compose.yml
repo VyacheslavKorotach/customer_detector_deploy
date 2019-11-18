@@ -6,6 +6,7 @@ services:
       - 80:80
     volumes:
       - ./src/events:/usr/share/nginx/html
+    restart: always
   heart_monitor:
     image: python:latest
     build: .
@@ -13,6 +14,7 @@ services:
     command: bash -c "python detectors_heart_monitor.py"
     volumes:
       - ./src:/src
+    restart: always
   event_saver:
     image: python:latest
     build: .
@@ -20,4 +22,4 @@ services:
     command: bash -c "python detectors_event_saver.py"
     volumes:
       - ./src:/src
-
+    restart: always
