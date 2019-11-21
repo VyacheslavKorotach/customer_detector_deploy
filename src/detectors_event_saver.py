@@ -3,6 +3,22 @@ import os
 import json
 import time
 import paho.mqtt.client as mqtt
+from datetime import datetime
+from pytz import timezone
+
+fmt = "%Y-%m-%d %H:%M:%S %Z%z"
+
+# Current time in UTC
+now_utc = datetime.now(timezone('UTC'))
+print(now_utc.strftime(fmt))
+
+# Convert to US/Pacific time zone
+now_pacific = now_utc.astimezone(timezone('US/Pacific'))
+print(now_pacific.strftime(fmt))
+
+# Convert to Europe/Berlin time zone
+now_kiev = now_pacific.astimezone(timezone('Europe/Kiev'))
+print(now_kiev.strftime(fmt))
 
 topic_sub_events = 'customer_detector/exchanges/events/#'
 
@@ -35,13 +51,17 @@ def on_message(mosq, obj, msg):
         print("it was not a utf8-encoded unicode string")
     if is_json(json_string):
         d = json.loads(json_string)
-        events_filename = events_path + str(time.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
+        # events_filename = events_path + str(time.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
+        events_filename = events_path + str(now_kiev.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
         if 'event' in d.keys():
             events_file = open(events_filename, 'a')
-            events_file.write(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
+
+            # events_file.write(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
+            events_file.write(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
                               ', ' + str(d['event']) +
                               ', ' + str(d['duration']) + '\n')
-            print(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
+            # print(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
+            print(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
                   ', ' + str(d['event']) +
                   ', ' + str(d['duration']) + '\n')
             events_file.close()
