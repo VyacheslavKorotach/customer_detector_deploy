@@ -51,6 +51,8 @@ def on_message(mosq, obj, msg):
         print("it was not a utf8-encoded unicode string")
     if is_json(json_string):
         d = json.loads(json_string)
+        now_utc = datetime.now(timezone('UTC'))
+        now_pacific = now_utc.astimezone(timezone('US/Pacific'))
         now_kiev = now_pacific.astimezone(timezone('Europe/Kiev'))
         # events_filename = events_path + str(time.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
         events_filename = events_path + str(now_kiev.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
