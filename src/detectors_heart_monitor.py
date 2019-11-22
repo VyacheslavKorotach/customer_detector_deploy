@@ -8,6 +8,7 @@ import telebot
 bot_token = os.environ["EXCHANGE_BOT_TOKEN"]
 bot = telebot.TeleBot(bot_token)
 topic_sub_state = 'customer_detector/exchanges/state/#'
+topic_pub_events = 'customer_detector/exchanges/events/'
 events_path = "./events/"
 mqtt_host = os.environ["EXCHANGE_MQTT_HOST"]
 mqtt_user = os.environ["EXCHANGE_MQTT_USER"]
@@ -40,14 +41,11 @@ def on_message(mosq, obj, msg):
         if 'status' in d.keys():
             detector = msg.topic.split('/')[-1]
             if detector not in devices_heart_beat_times.keys():
-                bot.send_message(-1001440639497, f'heart of exchange ({detector}) started to beat')
-                print(f'heart of exchange ({detector}) started to beat')
-                events_fname = events_path + str(time.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
-                events_f = open(events_fname, 'a')
-                events_f.write(str(time.strftime("%d.%m.%Y %H:%M:%S")) +
-                               ', ' + f'heart of exchange ({detector}) started to beat' +
-                               ', ' + str(0) + '\n')
-                events_f.close()
+                msg_str = f'heart of exchange ({detector}) started to beat'
+                bot.send_message(-1001440639497, msg_str)
+                print(msg_str)
+                mqtt_msg_str = '{"event": "' + msg_str + '", "duration": 0}'
+                mqttc.publish(topic_pub_events + detector, mqtt_msg_str)
             devices_heart_beat_times[detector] = time.time()
 
 
@@ -96,10 +94,6 @@ while True:
             warning_msg = f'heart of exchange ({device}) stopped for more than {max_heart_interval} sec.'
             bot.send_message(-1001440639497, warning_msg)
             print(warning_msg)
-            events_filename = events_path + str(time.strftime("%Y%m%d")) + "_" + device + '.csv'
-            events_file = open(events_filename, 'a')
-            events_file.write(str(time.strftime("%d.%m.%Y %H:%M:%S")) +
-                              ', ' + warning_msg +
-                              ', ' + str(0) + '\n')
-            events_file.close()
+            mqtt_msg_str = '{"event": "' + warning_msg + '", "duration": 0}'
+            mqttc.publish(topic_pub_events + device, mqtt_msg_str)
             devices_heart_beat_times.pop(device)

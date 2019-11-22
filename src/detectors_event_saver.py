@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import json
-import time
+#import time
 import paho.mqtt.client as mqtt
 from datetime import datetime
 from pytz import timezone
@@ -54,16 +54,13 @@ def on_message(mosq, obj, msg):
         now_utc = datetime.now(timezone('UTC'))
         now_pacific = now_utc.astimezone(timezone('US/Pacific'))
         now_kiev = now_pacific.astimezone(timezone('Europe/Kiev'))
-        # events_filename = events_path + str(time.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
         events_filename = events_path + str(now_kiev.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
         if 'event' in d.keys():
             events_file = open(events_filename, 'a')
 
-            # events_file.write(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
             events_file.write(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
                               ', ' + str(d['event']) +
                               ', ' + str(d['duration']) + '\n')
-            # print(str(time.strftime("%d.%m.%Y %H:%M:%S %Z")) +
             print(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
                   ', ' + str(d['event']) +
                   ', ' + str(d['duration']) + '\n')
