@@ -37,7 +37,7 @@ def on_message(mosq, obj, msg):
     """
     get the events strings from device
     events string:
-    {"event": "Customer arraived", "duration": 11125}
+    {"event": "Customer arrived", "duration": 11125}
     or
     {"event": "heart of exchange stopped for more then .. sec", "duration": 23000}
     or
@@ -56,15 +56,13 @@ def on_message(mosq, obj, msg):
         now_kiev = now_pacific.astimezone(timezone('Europe/Kiev'))
         events_filename = events_path + str(now_kiev.strftime("%Y%m%d")) + "_" + msg.topic.split('/')[-1] + '.csv'
         if 'event' in d.keys():
-            events_file = open(events_filename, 'a')
-
-            events_file.write(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
-                              ', ' + str(d['event']) +
-                              ', ' + str(d['duration']) + '\n')
-            print(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
-                  ', ' + str(d['event']) +
-                  ', ' + str(d['duration']) + '\n')
-            events_file.close()
+            with open(events_filename, 'a') as events_file:
+                events_file.write(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
+                                  ', ' + str(d['event']) +
+                                  ', ' + str(d['duration']) + '\n')
+                print(str(now_kiev.strftime("%d.%m.%Y %H:%M:%S %Z")) +
+                      ', ' + str(d['event']) +
+                      ', ' + str(d['duration']) + '\n')
 
 
 def on_publish(mosq, obj, mid):
